@@ -13,7 +13,7 @@ func Allow(double interface{}) *Allowed {
 	return &Allowed{mock: m}
 }
 
-// Â is an alias for Allow.
+// Â is an alias for Allow. Use Shift+Option+M to type this symbol on Mac; Alt+0194 on Windows.
 func Â(double interface{}) *Allowed {
 	return Allow(double)
 }
@@ -21,6 +21,8 @@ func Â(double interface{}) *Allowed {
 // Ø is used to delegate behavior to instances of Mock. Not meant to be called
 // directly. If it returns non-nil, then the method call was matched; methods
 // that return nothing still return an empty slice.
+//
+// Use Shift+Option+O to type this symbol on Mac; Alt+0216 on Windows.
 //
 // In contrast, if this method returns nil then the method call was NOT
 // matched and the caller should behave accordingly, i.e. panic unless some
