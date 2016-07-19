@@ -1,5 +1,7 @@
 # Gomuti
 
+**WARNING:** Experimental code; master branch may break compatibility.                       
+
 [![Build Status](https://travis-ci.org/xeger/gomuti.png)](https://travis-ci.org/xeger/gomuti)
 
 Gomuti is DSL for [mocking](https://en.wikipedia.org/wiki/Mock_object) Golang interfaces, heavily inspired by [Gomega](https://github.com/onsi/gomega) and [Ginkgo](https://github.com/onsi/ginkgo).
