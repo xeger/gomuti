@@ -6,52 +6,16 @@ import (
 	"strings"
 )
 
-// Allow returns an object that can be used to program an expected method call to
-// the mock.
+// Allow accepts an instance of Mock, or any struct contains a Mock, and returns
+// an object that can be used to program an expected method call to the mock.
 func Allow(double interface{}) *Allowed {
 	m := find(reflect.ValueOf(double))
-	return &Allowed{mock: m}
+	return m.Allow()
 }
 
 // Â is an alias for Allow.
 func Â(double interface{}) *Allowed {
 	return Allow(double)
-}
-
-// Ø is used to delegate behavior to instances of Mock. Not meant to be called
-// directly. If it returns non-nil, then the method call was matched; methods
-// that return nothing still return an empty slice.
-//
-// In contrast, if this method returns nil then the method call was NOT
-// matched and the caller should behave accordingly, i.e. panic unless some
-// stubbed default behavior is appropriate.
-func Ø(mock Mock, method string, params ...interface{}) []interface{} {
-	if mock == nil {
-		return nil
-	}
-	calls := mock[method]
-
-	for _, c := range calls {
-		if len(c.Params) == len(params) {
-			matched := true
-			for i, p := range params {
-				success, err := c.Params[i].Match(p)
-				if err != nil {
-					panic(err.Error())
-				}
-				matched = matched && success
-			}
-			if matched {
-				if c.Panic != nil {
-					panic(c.Panic)
-				}
-				return c.Results
-			}
-		} else if c.Params == nil {
-			return c.Results
-		}
-	}
-	return nil
 }
 
 func isMock(t reflect.Type) bool {
@@ -71,7 +35,7 @@ func find(v reflect.Value) Mock {
 		// The real McCoy! (Or a pointer to it.)
 		if ptr {
 			if v.IsNil() {
-				panic(fmt.Sprintf("mock.Allow: must initialize %s before calling", v.Type().String()))
+				panic(fmt.Sprintf("gomuti.Allow: must initialize %s before calling", v.Type().String()))
 			}
 			return reflect.Indirect(v).Interface().(Mock)
 		}
@@ -85,10 +49,16 @@ func find(v reflect.Value) Mock {
 				// the Mock interface value of the field.
 				var mock Mock
 				if ptr {
+					if v.IsNil() {
+						panic(fmt.Sprintf("gomuti.Allow: must initialize *%s before calling", t.Name()))
+					}
 					v = reflect.Indirect(v)
-					f := reflect.Indirect(v).Field(i)
+					if !v.IsValid() {
+						panic(fmt.Sprintf("gomuti.Allow: must initialize %s.%s before calling", t.Name(), sf.Name))
+					}
+					f := v.Field(i)
 					if !f.CanInterface() {
-						panic(fmt.Sprintf("mock.Allow: cannot work with unexported field %s of %s; change it to %s", sf.Name, t.String(), strings.Title(sf.Name)))
+						panic(fmt.Sprintf("gomuti.Allow: cannot work with unexported field %s of %s; change it to %s", sf.Name, t.String(), strings.Title(sf.Name)))
 					}
 				}
 				mock = v.Field(i).Interface().(Mock)
@@ -97,12 +67,12 @@ func find(v reflect.Value) Mock {
 						mock = Mock{}
 						reflect.Indirect(v).Field(i).Set(reflect.ValueOf(mock))
 					} else {
-						panic(fmt.Sprintf("mock.Allow: must pass a pointer to %s or initialize its .Mock before calling", t.String()))
+						panic(fmt.Sprintf("gomuti.Allow: must pass a pointer to %s or initialize its .Mock before calling", t.String()))
 					}
 				}
 				return mock
 			}
 		}
 	}
-	panic(fmt.Sprintf("mock: don't know how to program behaviors for %s", t.String()))
+	panic(fmt.Sprintf("gomuti: don't know how to program behaviors for %s", t.String()))
 }
