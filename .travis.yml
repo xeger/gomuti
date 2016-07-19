@@ -1,0 +1,11 @@
+language: go
+go:
+  - 1.6
+sudo: false
+install:
+  - go get github.com/onsi/gomega
+  - go get github.com/onsi/ginkgo/ginkgo
+  - go get github.com/mattn/goveralls
+script:
+  - ginkgo -r -cover
+  - # goveralls -coverprofile=flatpack.coverprofile -service=travis-ci -repotoken $COVERALLS_TOKEN
