@@ -1,7 +1,5 @@
 package gomuti
 
-import "github.com/onsi/gomega"
-
 // Allowed is a DSL object that lets you specify parameters, return values
 // and other behaviors for a mocked call. For details on usage, see the
 // documentation for Allow() and Â().
@@ -31,7 +29,7 @@ func (a *Allowed) With(params ...interface{}) *Allowed {
 	if call.Params != nil {
 		panic("gomuti: cannot specify With() twice")
 	}
-	call.Params = a.params(params...)
+	call.Params = paramsToMatchers(params)
 	return a
 }
 
@@ -95,20 +93,6 @@ func (a *Allowed) AndReturn(results ...interface{}) {
 // AndPanic is an alias for Panic()
 func (a *Allowed) AndPanic(reason interface{}) {
 	a.Panic(reason)
-}
-
-// Convert all non-matcher parameters to matchers.
-func (a *Allowed) params(params ...interface{}) []Matcher {
-	matchers := make([]Matcher, len(params))
-	for i, p := range params {
-		m, ok := p.(Matcher)
-		if ok {
-			matchers[i] = m
-		} else {
-			matchers[i] = gomega.BeEquivalentTo(p)
-		}
-	}
-	return matchers
 }
 
 // Ensure that the user only specifies ONE behavior: Do, Panic or Return.
