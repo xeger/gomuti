@@ -16,6 +16,8 @@ type allowed struct {
 // https://github.com/xeger/mongoose
 type Mock map[string][]allowed
 
+var defaultReturn = make([]interface{}, 0)
+
 // Allow returns an object that can be used to program an expected method call.
 // Rather than calling this directly, you probably want to call gomuti.Allow()
 // on some struct that contains a Mock.
@@ -41,8 +43,12 @@ func (m Mock) Delegate(method string, params ...interface{}) []interface{} {
 			return c.Do(params...)
 		} else if c.Panic != nil {
 			panic(c.Panic)
+		} else if c.Results != nil {
+			return c.Results
 		}
-		return c.Results
+		// Lazy user didn't tell us to do, panic or return; assume he meant to
+		// return nothing
+		return defaultReturn
 	}
 	return nil
 }

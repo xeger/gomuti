@@ -25,10 +25,12 @@ func (sm *SpyMatcher) Match(actual interface{}) (bool, error) {
 	return false, fmt.Errorf("not implemented")
 }
 
+// FailureMessage returns an explanation of the method call that was expected.
 func (sm *SpyMatcher) FailureMessage(actual interface{}) (message string) {
 	panic("not implemented")
 }
 
+// NegatedFailureMessage returns an explanation of the method call that was unexpected.
 func (sm *SpyMatcher) NegatedFailureMessage(actual interface{}) (message string) {
 	panic("not implemented")
 }
