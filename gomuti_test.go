@@ -1,8 +1,6 @@
 package gomuti_test
 
 import (
-	"testing"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/xeger/gomuti"
@@ -32,27 +30,32 @@ var _ = Describe("Allow", func() {
 		Â(double).Call("Foo", 1)
 	})
 
-	It("accepts struct with a Mock field", func() {
+	It("accepts struct with an initialized Mock field", func() {
 		double := good{Mock: Mock{}}
 		Â(double).Call("Foo", 2)
 	})
 
-	It("accepts pointer-to-struct with a Mock field", func() {
+	It("accepts pointer-to-struct with a nil Mock field", func() {
 		double := &good{}
 		Allow(double).ToReceive("Foo", 2)
 		Expect(double.Mock).NotTo(BeNil())
 	})
 
-	It("panics with pointer-to-Mock", func() {
+	It("panics when it cannot initialize a Mock", func() {
 		Expect(func() {
 			var double *Mock
 			Â(double).Call("Foo", 1)
+		}).To(Panic())
+
+		Expect(func() {
+			double := good{}
+			Â(double).Call("Foo", 1)
 			Expect(double).NotTo(BeNil())
+		}).To(Panic())
+
+		Expect(func() {
+			var double Mock
+			Â(double).Call("Foo", 1)
 		}).To(Panic())
 	})
 })
-
-func TestMock(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Mock Suite")
-}

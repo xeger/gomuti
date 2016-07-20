@@ -1,6 +1,6 @@
 # Gomuti
 
-**WARNING:** Experimental code; master branch may break compatibility.                       
+**WARNING:** Experimental code; master branch may break compatibility. Please see [CHANGELOG](CHANGELOG.md) for information on planned changes.
 
 [![Build Status](https://travis-ci.org/xeger/gomuti.png)](https://travis-ci.org/xeger/gomuti)
 
