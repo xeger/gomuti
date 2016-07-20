@@ -1,20 +1,15 @@
 package gomuti
 
-// Internal representation of a call that has been programmed via Allowed.
-type allowed struct {
-	Params  []Matcher
-	Do      DoFunc
-	Panic   interface{}
-	Results []interface{}
-}
+import "fmt"
 
 // Mock is a state container for mocked behavior. Rather than instantiating it
 // directly, you should include a field of this type in your mock structs and
 // define methods that delegate their behavior to the mock's Delegate() method.
 //
 // If all of this sounds like too much work, then you should really check out
-// https://github.com/xeger/mongoose
-type Mock map[string][]allowed
+// https://github.com/xeger/mongoose to let the computer generate your mocks
+// for you!
+type Mock map[string][]call
 
 var defaultReturn = make([]interface{}, 0)
 
@@ -53,27 +48,28 @@ func (m Mock) Delegate(method string, params ...interface{}) []interface{} {
 	return nil
 }
 
-// Finds the closest matching call
-// TODO: actual find closest match, rather than finding exact match
-func (m Mock) bestMatch(method string, params ...interface{}) *allowed {
+// Finds the closest matching call for the specified method, or nil if no
+// calls match. Panics if two or more calls are an equally good match.
+func (m Mock) bestMatch(method string, params ...interface{}) *call {
 	calls := m[method]
 
+	matches := make([]*call, 0, 3)
+	bestScore := 0
+
 	for _, c := range calls {
-		if len(c.Params) == len(params) {
-			matched := true
-			for i, p := range params {
-				success, err := c.Params[i].Match(p)
-				if err != nil {
-					panic(err.Error())
-				}
-				matched = matched && success
-			}
-			if matched {
-				return &c
-			}
-		} else if c.Params == nil {
-			return &c
+		score := c.score(params)
+		if score > 0 && score >= bestScore {
+			matches = append(matches, &c)
+			bestScore = score
 		}
 	}
-	return nil
+
+	switch len(matches) {
+	case 0:
+		return nil
+	case 1:
+		return matches[0]
+	default:
+		panic(fmt.Sprintf("gomuti: matched %d mocked calls to %s; don't know which to behave like", len(matches), method))
+	}
 }

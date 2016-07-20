@@ -92,13 +92,14 @@ var _ = Describe("Allowed", func() {
 	})
 
 	Context("Return", func() {
-		It("causes values to be returned", func() {
-			Â(Receiver).Call("Foo").Return(1, 2, 3, 4)
-			Expect(Receiver.Delegate("Foo")).To(BeEquivalentTo([]interface{}{1, 2, 3, 4}))
-		})
-		It("returns nothing by default", func() {
+		It("returns nothing when not called", func() {
 			Â(Receiver).Call("Bar")
 			Expect(Receiver.Delegate("Bar")).To(BeEmpty())
+		})
+
+		It("returns results when called", func() {
+			Â(Receiver).Call("Foo").Return(1, 2, 3, 4)
+			Expect(Receiver.Delegate("Foo")).To(BeEquivalentTo([]interface{}{1, 2, 3, 4}))
 		})
 	})
 

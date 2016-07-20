@@ -10,35 +10,11 @@ type Allowed struct {
 	last string
 }
 
-func (a *Allowed) params(params ...interface{}) []Matcher {
-	matchers := make([]Matcher, len(params))
-	for i, p := range params {
-		m, ok := p.(Matcher)
-		if ok {
-			matchers[i] = m
-		} else {
-			matchers[i] = gomega.BeEquivalentTo(p)
-		}
-	}
-	return matchers
-}
-
-// Ensure that the user only specifies ONE of Do, Panic or Return.
-func (a Allowed) behave(d DoFunc, p interface{}, r []interface{}) {
-	if d != nil && p != nil {
-		panic("gomuti: cannot simultaneously Do() and Panic(); choose one")
-	} else if d != nil && r != nil {
-		panic("gomuti: cannot simultaneously Do() and Return(); choose one")
-	} else if p != nil && r != nil {
-		panic("gomuti: cannot simultaneously Panic() and Return(); choose one")
-	}
-}
-
 // Call allows the mock to receive a method call with matching parameters and
 // return a specific set of values.
 func (a *Allowed) Call(method string, params ...interface{}) *Allowed {
 	calls := a.mock[method]
-	calls = append(calls, allowed{})
+	calls = append(calls, call{})
 	a.mock[method] = calls
 	a.last = method
 	return a
@@ -119,4 +95,29 @@ func (a *Allowed) AndReturn(results ...interface{}) {
 // AndPanic is an alias for Panic()
 func (a *Allowed) AndPanic(reason interface{}) {
 	a.Panic(reason)
+}
+
+// Convert all non-matcher parameters to matchers.
+func (a *Allowed) params(params ...interface{}) []Matcher {
+	matchers := make([]Matcher, len(params))
+	for i, p := range params {
+		m, ok := p.(Matcher)
+		if ok {
+			matchers[i] = m
+		} else {
+			matchers[i] = gomega.BeEquivalentTo(p)
+		}
+	}
+	return matchers
+}
+
+// Ensure that the user only specifies ONE behavior: Do, Panic or Return.
+func (a Allowed) behave(d DoFunc, p interface{}, r []interface{}) {
+	if d != nil && p != nil {
+		panic("gomuti: cannot simultaneously Do() and Panic(); choose one")
+	} else if d != nil && r != nil {
+		panic("gomuti: cannot simultaneously Do() and Return(); choose one")
+	} else if p != nil && r != nil {
+		panic("gomuti: cannot simultaneously Panic() and Return(); choose one")
+	}
 }
