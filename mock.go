@@ -57,13 +57,13 @@ func (m Mock) Delegate(method string, params ...interface{}) []interface{} {
 func (m Mock) bestMatch(method string, params ...interface{}) *call {
 	calls := m[method]
 
-	matches := make([]*call, 0, 3)
+	matches := make([]call, 0, 3)
 	bestScore := 0
 
 	for _, c := range calls {
 		score := c.score(params)
 		if score > 0 && score >= bestScore {
-			matches = append(matches, &c)
+			matches = append(matches, c)
 			bestScore = score
 		}
 	}
@@ -72,7 +72,7 @@ func (m Mock) bestMatch(method string, params ...interface{}) *call {
 	case 0:
 		return nil
 	case 1:
-		return matches[0]
+		return &matches[0]
 	default:
 		panic(fmt.Sprintf("gomuti: matched %d mocked calls to %s; don't know which to behave like", len(matches), method))
 	}
