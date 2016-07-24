@@ -8,9 +8,10 @@ import (
 	. "github.com/xeger/gomuti"
 )
 
-// Combined unit test of Spy and SpyMatcher.
-// Not strictly a unit test, but it's more idiomatic this way...
-var _ = Describe("Spy(Matcher)", func() {
+// This exercises code in SpyMatcher in order to test functionality of Spy.
+// Not strictly a unit test, but it's more idiomatic this way. If it causes
+// trouble, just rewrite these tests to verify the behavior of Spy by hand.
+var _ = Describe("Spy", func() {
 	now := time.Now()
 	isOne := Equal(1)
 	isTrue := BeTrue()

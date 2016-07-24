@@ -106,5 +106,5 @@ func findSpy(v reflect.Value) Spy {
 			}
 		}
 	}
-	panic(fmt.Sprintf("gomuti: don't know how to spy on %s", t.String()))
+	panic(fmt.Sprintf("gomuti: don't know how to spy on %s", v.Type().Name))
 }
