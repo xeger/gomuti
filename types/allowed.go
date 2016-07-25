@@ -1,4 +1,4 @@
-package gomuti
+package types
 
 // Allowed is a DSL object that lets you specify parameters, return values
 // and other behaviors for a mocked call. For details on usage, see the
@@ -29,7 +29,7 @@ func (a *Allowed) With(params ...interface{}) *Allowed {
 	if call.Params != nil {
 		panic("gomuti: cannot specify With() twice")
 	}
-	call.Params = paramsToMatchers(params)
+	call.Params = MatchParams(params)
 	return a
 }
 

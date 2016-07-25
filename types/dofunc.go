@@ -1,4 +1,4 @@
-package gomuti
+package types
 
 // DoFunc is a function signature that you can pass to Allow() in order
 // to have fine-gained control over the behavior of your mocks. You are

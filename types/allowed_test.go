@@ -1,4 +1,4 @@
-package gomuti_test
+package types_test
 
 import (
 	"net/url"
@@ -6,17 +6,18 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/xeger/gomuti"
+	"github.com/xeger/gomuti/types"
 )
 
 var _ = Describe("Allowed", func() {
-	var Receiver Mock
+	var Receiver types.Mock
 
 	BeforeEach(func() {
-		Receiver = Mock{}
+		Receiver = types.Mock{}
 	})
 
 	Context("given a nonsensical call chain", func() {
-		Receiver := Mock{}
+		Receiver := types.Mock{}
 
 		It("panics", func() {
 			Expect(func() {

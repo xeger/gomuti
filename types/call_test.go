@@ -1,4 +1,4 @@
-package gomuti
+package types
 
 import (
 	. "github.com/onsi/ginkgo"

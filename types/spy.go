@@ -1,4 +1,4 @@
-package gomuti
+package types
 
 import (
 	"fmt"
@@ -51,12 +51,22 @@ func (s Spy) Count(method string, criteria ...Matcher) int {
 }
 
 func isSpy(t reflect.Type) bool {
-	return t.String() == "gomuti.Spy" && strings.Index(t.PkgPath(), "gomuti") > 0
+	return t.String() == "types.Spy" && strings.Index(t.PkgPath(), "gomuti") > 0
 }
 
-// Find the Spy associated with an arbitrary value and initialize it if
-// necessary; panic if no Mock is found or a new Mock cannot be initialized.
-func findSpy(v reflect.Value) Spy {
+// FindSpy uses reflection to find the spy-controller associated with a given
+// value. Its behavior varies depending on the type of the value:
+//
+// 1) Instance of Spy: return the value itself
+// 2) Pointer to Spy: return the pointed-to value
+// 3) Struct that contains a Spy field:
+//      3a) if the field is nil, panic (user must initialize the field)
+//      3b) return the field's value
+// 4) Pointer to struct that contains a Spy field:
+//      4a) if the field is nil, initialize it to an empty Spy
+//      4b) return the field's value
+// 6) Anything else: panic (don't know how to spy on ...)
+func FindSpy(v reflect.Value) Spy {
 	t := v.Type()
 	ptr := (t.Kind() == reflect.Ptr)
 	if ptr {

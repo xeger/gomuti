@@ -1,39 +1,40 @@
-package gomuti_test
+package matchers_test
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/xeger/gomuti"
+	"github.com/xeger/gomuti/matchers"
+	"github.com/xeger/gomuti/types"
 )
 
 // Type that contains a spy.
 type infiltrated struct {
-	Espion Spy
+	Espion types.Spy
 }
 
 // Type that embeds a spy.
 type infiltratedCovertly struct {
-	Spy
+	types.Spy
 }
 
-var _ = Describe("SpyMatcher", func() {
+var _ = Describe("HaveCallMatcher", func() {
 	Context("Match", func() {
 		var o infiltrated
 		var po *infiltrated
 		var e infiltratedCovertly
 		var pe *infiltratedCovertly
-		var sm *SpyMatcher
+		var sm *matchers.HaveCallMatcher
 
 		BeforeEach(func() {
-			o = infiltrated{Espion: Spy{}}
-			po = &infiltrated{Espion: Spy{}}
-			e = infiltratedCovertly{Spy{}}
-			pe = &infiltratedCovertly{Spy{}}
+			o = infiltrated{Espion: types.Spy{}}
+			po = &infiltrated{Espion: types.Spy{}}
+			e = infiltratedCovertly{types.Spy{}}
+			pe = &infiltratedCovertly{types.Spy{}}
 			o.Espion.Observe("SecretMeeting")
 			po.Espion.Observe("SecretMeeting")
 			e.Observe("SecretMeeting")
 			pe.Observe("SecretMeeting")
-			sm = &SpyMatcher{Method: "SecretMeeting"}
+			sm = &matchers.HaveCallMatcher{Method: "SecretMeeting"}
 		})
 
 		It("detects spies in the field", func() {

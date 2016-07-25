@@ -1,8 +1,6 @@
-package gomuti
+package types
 
-import (
-	"github.com/onsi/gomega/matchers"
-)
+import "github.com/onsi/gomega/matchers"
 
 // Internal representation of a call that has been programmed on a Mock via
 // calls to an Allowed.

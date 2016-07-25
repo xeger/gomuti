@@ -1,4 +1,4 @@
-package gomuti
+package types
 
 import (
 	"fmt"
@@ -79,12 +79,22 @@ func (m Mock) bestMatch(method string, params ...interface{}) *call {
 }
 
 func isMock(t reflect.Type) bool {
-	return t.String() == "gomuti.Mock" && strings.Index(t.PkgPath(), "gomuti") > 0
+	return t.String() == "types.Mock" && strings.Index(t.PkgPath(), "gomuti") > 0
 }
 
-// Find the Mock associated with an arbitrary value and initialize it if
-// necessary; panic if no Mock is found or a new Mock cannot be initialized.
-func findMock(v reflect.Value) Mock {
+// FindMock uses reflection to find the mock-controller associated with a given
+// value. Its behavior varies depending on the type of the value:
+//
+// 1) Instance of Mock: return the value itself
+// 2) Pointer to Mock: return the pointed-to value
+// 3) Struct that contains a Mock field:
+//      3a) if the field is nil, panic (user must initialize the field)
+//      3b) return the field's value
+// 4) Pointer to struct that contains a Mock field:
+//      4a) if the field is nil, initialize it to an empty Mock
+//      4b) return the field's value
+// 6) Anything else: panic (don't know how to mock behaviors for ...)
+func FindMock(v reflect.Value) Mock {
 	t := v.Type()
 	ptr := (t.Kind() == reflect.Ptr)
 	if ptr {

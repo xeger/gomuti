@@ -4,34 +4,35 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/xeger/gomuti"
+	"github.com/xeger/gomuti/types"
 )
 
 type good struct {
-	Mock Mock
+	Mock types.Mock
 }
 
 type bad struct {
-	mock Mock
+	mock types.Mock
 }
 
 var _ = Describe("Allow", func() {
 	It("has an RSpec-like DSL", func() {
-		double := good{Mock: Mock{}}
+		double := good{Mock: types.Mock{}}
 		Allow(double).ToReceive("Foo", 2)
 	})
 
 	It("has a gomega-like DSL", func() {
-		double := good{Mock: Mock{}}
+		double := good{Mock: types.Mock{}}
 		Â(double).Call("Foo", 1)
 	})
 
 	It("accepts Mock", func() {
-		double := Mock{}
+		double := types.Mock{}
 		Â(double).Call("Foo", 1)
 	})
 
 	It("accepts struct with an initialized Mock field", func() {
-		double := good{Mock: Mock{}}
+		double := good{Mock: types.Mock{}}
 		Â(double).Call("Foo", 2)
 	})
 
@@ -43,7 +44,7 @@ var _ = Describe("Allow", func() {
 
 	It("panics when it cannot initialize a Mock", func() {
 		Expect(func() {
-			var double *Mock
+			var double *types.Mock
 			Â(double).Call("Foo", 1)
 		}).To(Panic())
 
@@ -54,7 +55,7 @@ var _ = Describe("Allow", func() {
 		}).To(Panic())
 
 		Expect(func() {
-			var double Mock
+			var double types.Mock
 			Â(double).Call("Foo", 1)
 		}).To(Panic())
 	})
