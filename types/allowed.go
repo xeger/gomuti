@@ -17,9 +17,12 @@ type Allowed struct {
 // return a specific set of values.
 func (a *Allowed) Call(method string, params ...interface{}) *Allowed {
 	calls := a.mock[method]
-	calls = append(calls, call{})
+	calls = append(calls, Call{})
 	a.mock[method] = calls
 	a.last = method
+	if len(params) > 0 {
+		a.With(params...)
+	}
 	return a
 }
 

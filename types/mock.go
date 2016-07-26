@@ -13,7 +13,7 @@ import (
 // If all of this sounds like too much work, then you should really check out
 // https://github.com/xeger/mongoose to let the computer generate your mocks
 // for you!
-type Mock map[string][]call
+type Mock map[string][]Call
 
 var defaultReturn = make([]interface{}, 0)
 
@@ -53,11 +53,11 @@ func (m Mock) Call(method string, params ...interface{}) []interface{} {
 }
 
 // Finds the closest matching call for the specified method, or nil if no
-// calls match. Panics if two or more calls are an equally good match.
-func (m Mock) bestMatch(method string, params ...interface{}) *call {
+// calls match. Calls ChooseCall() as a tiebreaker for matching calls.
+func (m Mock) bestMatch(method string, params ...interface{}) *Call {
 	calls := m[method]
 
-	matches := make([]call, 0, 3)
+	matches := make([]Call, 0, 3)
 	bestScore := 0
 
 	for _, c := range calls {
@@ -74,7 +74,13 @@ func (m Mock) bestMatch(method string, params ...interface{}) *call {
 	case 1:
 		return &matches[0]
 	default:
-		panic(fmt.Sprintf("gomuti: matched %d mocked calls to %s; don't know which to behave like", len(matches), method))
+		var best Call
+		if ChooseCall == nil {
+			best = matches[len(matches)-1]
+		} else {
+			best = ChooseCall(matches)
+		}
+		return &best
 	}
 }
 
