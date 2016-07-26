@@ -87,7 +87,7 @@ that adds arbitrarily-typed values.
 
 ### Terse DSL
 
-Gomuti's long-form DSL is inspired by the RSpec plain_English approach.
+Gomuti's long-form DSL is inspired by RSpec and its "plain English" approach.
 There is also a short-form DSL built around the method `gomuti.Â()`. To produce
 the Â character, type `Alt+0194` on Windows keyboards or `Shift+Option+M` on Mac keyboards
 (as a mnemonic, think "**Â** allows my **M**ock the **o**ption of being called.") 
@@ -105,7 +105,7 @@ the beholder.)
   big := BeNumerically(">",2**32-1)
   Â(adder).Call("Add").With(big,Anything()).Panic("integer overflow")
 
-  Ω(subject.Multiply(2,5)).Shoul(Equal(10))
+  Ω(subject.Multiply(2,5)).Should(Equal(10))
   Ω(subject).Should(HaveCall("Add").Times(2))
 
   Ω(func() {
@@ -113,7 +113,7 @@ the beholder.)
   }).Should(Panic())
 ```
 
-Long and short form names are interchangeable; even when using the
+Long and short method calls are interchangeable; even when using the
 long-form `Allow()`, we recommended using `Call()` instead of `ToReceive()`
 because the word "receive" is usually associated with the channel-receive
 operation.
@@ -130,4 +130,4 @@ Clearly explain your problem, steps to reproduce, and your ideal solution (if kn
 
 ## How to contribute
 
-Fork the `xeger/mongoose` [repository](https://github.com/xeger/mongoose) on GitHub; make your changes; open a pull request.
+Fork the `xeger/gomuti` [repository](https://github.com/xeger/gomuti) on GitHub; make your changes; open a pull request.
