@@ -21,8 +21,8 @@ type Adder interface {
 ```
 
 To properly mock this interface, you need to create a struct type that has the
-same methods. The struct also holds a few Gomuti-related fields that keep state
-about the programmed behavior of the mock:
+same methods. The struct also holds two Gomuti-related fields that keep state
+about the programmed behavior of the mock and the observed method calls:
 
 ```go
   import gtypes "github.com/xeger/gomuti/types"
@@ -44,7 +44,12 @@ generate a mock type and methods for every interface in your package,
 but a hand-coded mock is fine for example purposes.
 
 To program behavior into your mock, use the DSL methods in the `gomuti`
-package. Imagine you're writing unit tests for the `Multiplier` type
+package. `Allow()` instructs your mock to expect a method call and
+tells it what to return. After calling the code under test, you can
+use the `HaveReceived()` Gomega matcher to verify the number of calls
+actually made to your mock as well as the specific parameter values.
+
+Imagine you're writing unit tests for the `Multiplier` type
 and you want to isolate yourself from bugs in `Adder`.
 
 ```go
@@ -88,7 +93,9 @@ the Â character, type `Alt+0194` on Windows keyboards or `Shift+Option+M` on Ma
 (as a mnemonic, think "**Â** allows my **M**ock the **o**ption of being called.") 
 
 Short-form equivalents are provided for `ToReceive()` and other chained methods, and
-a super-terse form of Â delivers maximum brevity.
+a super-terse form of Â delivers maximum brevity. If we also use Gomega's Ω method, our
+tests get very terse indeed. (Some would say "unreadable," but beauty is in the eye of
+the beholder.)
 
 ```go
   // Super terse DSL
@@ -98,10 +105,12 @@ a super-terse form of Â delivers maximum brevity.
   big := BeNumerically(">",2**32-1)
   Â(adder).Call("Add").With(big,Anything()).Panic("integer overflow")
 
-  Expect(subject.Multiply(2,5)).To(Equal(10))
-  Expect(func() {
+  Ω(subject.Multiply(2,5)).Shoul(Equal(10))
+  Ω(subject).Should(HaveCall("Add").Times(2))
+
+  Ω(func() {
     subject.Multiply(2**32-1,1)
-  }).ToPanic()
+  }).Should(Panic())
 ```
 
 Long and short form names are interchangeable; even when using the
