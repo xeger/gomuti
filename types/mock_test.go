@@ -19,7 +19,13 @@ var _ = Describe("Mock", func() {
 
 	It("feigns panic", func() {
 		Expect(func() {
-			m.Call("Foo", 0)
+			m.Call("Foo", 0, 0)
+		}).To(Panic())
+		Expect(func() {
+			m.Call("Foo", 0, 1)
+		}).To(Panic())
+		Expect(func() {
+			m.Call("Foo", 1, 0)
 		}).To(Panic())
 	})
 
