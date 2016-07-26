@@ -1,5 +1,10 @@
 package types
 
+import (
+	"fmt"
+	"reflect"
+)
+
 // Allowed is a DSL object that lets you specify parameters, return values
 // and other behaviors for a mocked call. For details on usage, see the
 // documentation for Allow() and Â().
@@ -33,19 +38,55 @@ func (a *Allowed) With(params ...interface{}) *Allowed {
 	return a
 }
 
+func do(fn interface{}) CallFunc {
+	cf, ok := fn.(CallFunc)
+	if ok {
+		return cf
+	}
+
+	fp, ok := fn.(func(...interface{}) []interface{})
+	if ok {
+		return CallFunc(fp)
+	}
+
+	v := reflect.ValueOf(fn)
+	switch v.Kind() {
+	case reflect.Func:
+		return func(params ...interface{}) []interface{} {
+			in := make([]reflect.Value, 0, len(params))
+			for _, p := range params {
+				in = append(in, reflect.ValueOf(p))
+			}
+			out := v.Call(in)
+			result := make([]interface{}, 0, len(out))
+			for _, o := range out {
+				if o.CanInterface() {
+					result = append(result, o.Interface())
+				} else {
+					panic(fmt.Sprintf("gomuti: CallFunc adapter cannot handle %s (CanInterface==false)", o.String()))
+				}
+			}
+			return result
+		}
+	default:
+		panic(fmt.Sprintf("gomuti: cannot convert %T into CallFunc", fn))
+	}
+}
+
 // Do provides a function that the mock will call in order to determine the
 // correct behavior when a call is matched.
-func (a Allowed) Do(do DoFunc) {
+func (a Allowed) Do(doer interface{}) {
+	df := do(doer)
 	calls := a.mock[a.last]
 	if calls == nil || len(calls) < 1 {
 		panic("gomuti: must use Call() before specifying Do()")
 	}
 	call := &calls[len(calls)-1]
-	a.behave(do, call.Panic, call.Results)
+	a.behave(df, call.Panic, call.Results)
 	if call.Do != nil {
 		panic("gomuti: cannot specify Do() twice")
 	}
-	call.Do = do
+	call.Do = df
 }
 
 // Return specifies what the mock should return when a method call is matched.
@@ -96,7 +137,7 @@ func (a *Allowed) AndPanic(reason interface{}) {
 }
 
 // Ensure that the user only specifies ONE behavior: Do, Panic or Return.
-func (a Allowed) behave(d DoFunc, p interface{}, r []interface{}) {
+func (a Allowed) behave(d CallFunc, p interface{}, r []interface{}) {
 	if d != nil && p != nil {
 		panic("gomuti: cannot simultaneously Do() and Panic(); choose one")
 	} else if d != nil && r != nil {

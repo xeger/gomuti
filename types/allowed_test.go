@@ -2,6 +2,7 @@ package types_test
 
 import (
 	"net/url"
+	"reflect"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -109,6 +110,45 @@ var _ = Describe("Allowed", func() {
 			Â(Receiver).Call("Foo").Panic("howdy")
 			Expect(func() {
 				Receiver.Delegate("Foo")
+			}).To(Panic())
+		})
+	})
+
+	Context("Do", func() {
+		It("accepts CallFunc", func() {
+			Â(Receiver).Call("Foo").Do(func(params ...interface{}) []interface{} {
+				r := len(params) >= 1 && reflect.ValueOf(params[0]).Bool()
+				return []interface{}{r}
+			})
+
+			r := Receiver.Delegate("Foo", true, 42, "answer")
+			Expect(r).NotTo(BeEmpty())
+			Expect(r[0]).To(BeTrue())
+			r = Receiver.Delegate("Foo", false, "question", nil)
+			Expect(r).NotTo(BeEmpty())
+			Expect(r[0]).NotTo(BeTrue())
+		})
+
+		It("accepts funcs with arbitrary signatures", func() {
+			Â(Receiver).Call("Foo").Do(func(likable bool) bool {
+				return likable
+			})
+
+			r := Receiver.Delegate("Foo", true)
+			Expect(r).NotTo(BeEmpty())
+			Expect(r[0]).To(BeTrue())
+			r = Receiver.Delegate("Foo", false)
+			Expect(r).NotTo(BeEmpty())
+			Expect(r[0]).NotTo(BeTrue())
+		})
+
+		It("panics on parameter mismatches", func() {
+			Â(Receiver).Call("Foo").Do(func(likable bool) bool {
+				return likable
+			})
+
+			Expect(func() {
+				Receiver.Delegate("Foo", 174)
 			}).To(Panic())
 		})
 	})

@@ -6,7 +6,7 @@ import "github.com/onsi/gomega/matchers"
 // calls to an Allowed.
 type call struct {
 	Params  []Matcher
-	Do      DoFunc
+	Do      CallFunc
 	Panic   interface{}
 	Results []interface{}
 }
