@@ -8,7 +8,7 @@ import (
 
 // Mock is a state container for mocked behavior. Rather than instantiating it
 // directly, you should include a field of this type in your mock structs and
-// define methods that delegate their behavior to the mock's Delegate() method.
+// define methods that delegate their behavior to the mock's Call() method.
 //
 // If all of this sounds like too much work, then you should really check out
 // https://github.com/xeger/mongoose to let the computer generate your mocks
@@ -24,14 +24,14 @@ func (m Mock) Allow() *Allowed {
 	return &Allowed{mock: m}
 }
 
-// Delegate informs the mock that a call has been made; if the call matches
+// Call informs the mock that a call has been made; if the call matches
 // a call that was programmed with Allow(), it returns non-nil. Methods
 // that return nothing, still return an empty slice if the call was matched.
 //
 // In contrast, if this method returns nil then the method call was NOT
 // matched and the caller should behave accordingly, i.e. panic unless some
 // stubbed default behavior is appropriate.
-func (m Mock) Delegate(method string, params ...interface{}) []interface{} {
+func (m Mock) Call(method string, params ...interface{}) []interface{} {
 	if m == nil {
 		return nil
 	}
@@ -105,7 +105,7 @@ func FindMock(v reflect.Value) Mock {
 		// The real McCoy! (Or a pointer to it.)
 		if ptr {
 			if v.IsNil() {
-				panic(fmt.Sprintf("gomuti.Allow: must initialize %s before calling", v.Type().String()))
+				panic(fmt.Sprintf("gomuti: must initialize %s before calling", v.Type().String()))
 			}
 			return reflect.Indirect(v).Interface().(Mock)
 		}
@@ -120,15 +120,15 @@ func FindMock(v reflect.Value) Mock {
 				var mock Mock
 				if ptr {
 					if v.IsNil() {
-						panic(fmt.Sprintf("gomuti.Allow: must initialize *%s before calling", t.Name()))
+						panic(fmt.Sprintf("gomuti: must initialize *%s before calling", t.Name()))
 					}
 					v = reflect.Indirect(v)
 					if !v.IsValid() {
-						panic(fmt.Sprintf("gomuti.Allow: must initialize %s.%s before calling", t.Name(), sf.Name))
+						panic(fmt.Sprintf("gomuti: must initialize %s.%s before calling", t.Name(), sf.Name))
 					}
 					f := v.Field(i)
 					if !f.CanInterface() {
-						panic(fmt.Sprintf("gomuti.Allow: cannot work with unexported field %s of %s; change it to %s", sf.Name, t.String(), strings.Title(sf.Name)))
+						panic(fmt.Sprintf("gomuti: cannot work with unexported field %s of %s; change it to %s", sf.Name, t.String(), strings.Title(sf.Name)))
 					}
 				}
 				mock = v.Field(i).Interface().(Mock)
@@ -137,7 +137,7 @@ func FindMock(v reflect.Value) Mock {
 						mock = Mock{}
 						reflect.Indirect(v).Field(i).Set(reflect.ValueOf(mock))
 					} else {
-						panic(fmt.Sprintf("gomuti.Allow: must pass a pointer to %s or initialize its .Mock before calling", t.String()))
+						panic(fmt.Sprintf("gomuti: must pass a pointer to %s or initialize its .Mock before calling", t.String()))
 					}
 				}
 				return mock

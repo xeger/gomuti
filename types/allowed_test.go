@@ -62,10 +62,10 @@ var _ = Describe("Allowed", func() {
 			It("matches equivalency", func() {
 				Â(Receiver).Call("Foo").With(1, 1.0, true, "stringy", 'X')
 
-				r1 := Receiver.Delegate("Foo", 1, 1.0, true, "stringy", 'X')
+				r1 := Receiver.Call("Foo", 1, 1.0, true, "stringy", 'X')
 				Expect(r1).NotTo(BeNil())
 
-				r2 := Receiver.Delegate("Foo", 0, 0.0, false, "cheesy", 'Y')
+				r2 := Receiver.Call("Foo", 0, 0.0, false, "cheesy", 'Y')
 				Expect(r2).To(BeNil())
 			})
 		})
@@ -77,18 +77,18 @@ var _ = Describe("Allowed", func() {
 				u3, _ := url.Parse("https://github.com/bar")
 				Â(Receiver).Call("Foo").With(*u1).Return(true)
 
-				Expect(Receiver.Delegate("Foo", *u1)).NotTo(BeNil())
-				Expect(Receiver.Delegate("Foo", *u2)).NotTo(BeNil())
+				Expect(Receiver.Call("Foo", *u1)).NotTo(BeNil())
+				Expect(Receiver.Call("Foo", *u2)).NotTo(BeNil())
 
-				Expect(Receiver.Delegate("Foo", *u3)).To(BeNil())
+				Expect(Receiver.Call("Foo", *u3)).To(BeNil())
 			})
 		})
 
 		Context("given matchers", func() {
 			It("tests satisfaction", func() {
 				Â(Receiver).Call("Foo").With(BeNumerically(">", 0)).Return(true)
-				Expect(Receiver.Delegate("Foo", 0)).To(BeNil())
-				Expect(Receiver.Delegate("Foo", 1)).NotTo(BeNil())
+				Expect(Receiver.Call("Foo", 0)).To(BeNil())
+				Expect(Receiver.Call("Foo", 1)).NotTo(BeNil())
 			})
 		})
 	})
@@ -96,12 +96,12 @@ var _ = Describe("Allowed", func() {
 	Context("Return", func() {
 		It("returns nothing when not called", func() {
 			Â(Receiver).Call("Bar")
-			Expect(Receiver.Delegate("Bar")).To(BeEmpty())
+			Expect(Receiver.Call("Bar")).To(BeEmpty())
 		})
 
 		It("returns results when called", func() {
 			Â(Receiver).Call("Foo").Return(1, 2, 3, 4)
-			Expect(Receiver.Delegate("Foo")).To(BeEquivalentTo([]interface{}{1, 2, 3, 4}))
+			Expect(Receiver.Call("Foo")).To(BeEquivalentTo([]interface{}{1, 2, 3, 4}))
 		})
 	})
 
@@ -109,7 +109,7 @@ var _ = Describe("Allowed", func() {
 		It("causes a panic", func() {
 			Â(Receiver).Call("Foo").Panic("howdy")
 			Expect(func() {
-				Receiver.Delegate("Foo")
+				Receiver.Call("Foo")
 			}).To(Panic())
 		})
 	})
@@ -121,10 +121,10 @@ var _ = Describe("Allowed", func() {
 				return []interface{}{r}
 			})
 
-			r := Receiver.Delegate("Foo", true, 42, "answer")
+			r := Receiver.Call("Foo", true, 42, "answer")
 			Expect(r).NotTo(BeEmpty())
 			Expect(r[0]).To(BeTrue())
-			r = Receiver.Delegate("Foo", false, "question", nil)
+			r = Receiver.Call("Foo", false, "question", nil)
 			Expect(r).NotTo(BeEmpty())
 			Expect(r[0]).NotTo(BeTrue())
 		})
@@ -134,10 +134,10 @@ var _ = Describe("Allowed", func() {
 				return likable
 			})
 
-			r := Receiver.Delegate("Foo", true)
+			r := Receiver.Call("Foo", true)
 			Expect(r).NotTo(BeEmpty())
 			Expect(r[0]).To(BeTrue())
-			r = Receiver.Delegate("Foo", false)
+			r = Receiver.Call("Foo", false)
 			Expect(r).NotTo(BeEmpty())
 			Expect(r[0]).NotTo(BeTrue())
 		})
@@ -148,7 +148,7 @@ var _ = Describe("Allowed", func() {
 			})
 
 			Expect(func() {
-				Receiver.Delegate("Foo", 174)
+				Receiver.Call("Foo", 174)
 			}).To(Panic())
 		})
 	})
