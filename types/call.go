@@ -21,7 +21,7 @@ func (c *call) score(params []interface{}) int {
 		// compute the score by considering all matchy matchers
 		score := 0
 		for i, p := range params {
-			success, err := c.Params[i].Match(p)
+			success, err := c.Params[i].Match(widen(p))
 			if err != nil {
 				panic(err.Error())
 			} else if !success {

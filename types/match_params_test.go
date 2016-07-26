@@ -18,6 +18,21 @@ var _ = Describe("MatchParams", func() {
 		}
 	})
 
+	It("widens numeric values", func() {
+		out := types.MatchParams([]interface{}{
+			uint8(0),
+			int8(1),
+			float32(2.0),
+		})
+
+		m, _ := out[0].Match(uint64(0))
+		Expect(m).To(BeTrue())
+		m, _ = out[1].Match(int64(1))
+		Expect(m).To(BeTrue())
+		m, _ = out[2].Match(float64(2.0))
+		Expect(m).To(BeTrue())
+	})
+
 	It("matches non-basic-type values using equivalence", func() {
 		out := types.MatchParams([]interface{}{
 			time.Now(),

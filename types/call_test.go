@@ -6,6 +6,13 @@ import (
 )
 
 var _ = Describe("call", func() {
+	It("widens numeric values before scoring", func() {
+		wide := []interface{}{uint64(0), int64(1), float64(2.0)}
+		narrow := []interface{}{uint8(0), int8(1), float32(2.0)}
+		c := call{Params: MatchParams(wide)}
+		Expect(c.score(narrow)).NotTo(BeZero())
+	})
+
 	It("scores 1 given no params", func() {
 		params := []interface{}{}
 		params2 := []interface{}{1, 2, 3, 4, 5}

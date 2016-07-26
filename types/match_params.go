@@ -23,7 +23,7 @@ func MatchParams(params []interface{}) []Matcher {
 			case reflect.Array, reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice, reflect.Struct, reflect.UnsafePointer:
 				matchers[i] = gomega.BeEquivalentTo(p)
 			default:
-				matchers[i] = gomega.Equal(p)
+				matchers[i] = gomega.Equal(widen(p))
 			}
 		}
 	}
