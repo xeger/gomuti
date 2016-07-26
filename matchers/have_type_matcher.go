@@ -1,8 +1,6 @@
 package matchers
 
 import (
-	"fmt"
-	"path/filepath"
 	"reflect"
 
 	"github.com/onsi/gomega/format"
@@ -16,31 +14,10 @@ type HaveTypeMatcher struct {
 	Expected string
 }
 
-func typename(t reflect.Type) string {
-	switch t.Kind() {
-	case reflect.Array:
-		return fmt.Sprintf("[%d]%s", t.Len(), typename(t.Elem()))
-	case reflect.Chan:
-		return fmt.Sprintf("chan %s", typename(t.Elem()))
-	case reflect.Map:
-		return fmt.Sprintf("map[%s]%s", typename(t.Key()), typename(t.Elem()))
-	case reflect.Ptr:
-		return fmt.Sprintf("*%s", typename(t.Elem()))
-	case reflect.Slice:
-		return fmt.Sprintf("[]%s", typename(t.Elem()))
-	default:
-		pp := t.PkgPath()
-		if pp != "" {
-			return fmt.Sprintf("%s.%s", filepath.Base(pp), t.Name())
-		}
-		return t.Name()
-	}
-}
-
 // Match returns true if the type name of actual is similar to the expected
 // name. The type name of actual is determined by calling reflect.TypeOf().
 func (m *HaveTypeMatcher) Match(actual interface{}) (bool, error) {
-	tn := typename(reflect.TypeOf(actual))
+	tn := reflect.TypeOf(actual).String()
 	return (tn == m.Expected), nil
 }
 
