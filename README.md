@@ -87,14 +87,15 @@ There is also a short-form DSL built around the method `gomuti.Â()`. To produce
 the Â character, type `Shift+Option+M` on Mac keyboards or `Alt+0194` on Windows
 keyboard; as a mnemonic, remember that it allows your (M)ock the (o)ption to
 receive method calls. Short-form equivalents are provided for `ToReceive()` and
-other chained methods.
+other chained methods and a super-terse option provides maximum brevity.
 
 ```go
-  Â(adder).Call("Add", 5,5).Return(10)
+  // Super terse DSL
+  Â(adder,"Add",5,5).Return(10)
 
-  //
+  // Moderately terse DSL with complex matcher.
   big := BeNumerically(">",2**32-1)
-  Â(adder).Call("Add",big,Anything()).Panic("integer overflow")
+  Â(adder).Call("Add").With(big,Anything()).Panic("integer overflow")
 
   Expect(subject.Multiply(2,5)).To(Equal(10))
   Expect(func() {

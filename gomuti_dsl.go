@@ -1,6 +1,7 @@
 package gomuti
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/xeger/gomuti/types"
@@ -14,6 +15,19 @@ func Allow(double interface{}) *types.Allowed {
 }
 
 // Â is an alias for Allow. Use Shift+Option+M to type this symbol on Mac; Alt+0194 on Windows.
-func Â(double interface{}) *types.Allowed {
-	return Allow(double)
+func Â(double interface{}, methodAndParams ...interface{}) *types.Allowed {
+	if len(methodAndParams) == 0 {
+		return Allow(double)
+	}
+
+	m, ok := methodAndParams[0].(string)
+	if !ok {
+		panic(fmt.Sprintf("gomuti.Â: expected string as method name; got %T", methodAndParams[0]))
+	}
+
+	p := methodAndParams[1:]
+	if len(p) > 0 {
+		return Allow(double).Call(m).With(p)
+	}
+	return Allow(double).Call(m)
 }
