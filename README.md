@@ -84,10 +84,11 @@ that adds arbitrarily-typed values.
 
 Gomuti's long-form DSL is inspired by the RSpec plain_English approach.
 There is also a short-form DSL built around the method `gomuti.Â()`. To produce
-the Â character, type `Shift+Option+M` on Mac keyboards or `Alt+0194` on Windows
-keyboard; as a mnemonic, remember that it allows your (M)ock the (o)ption to
-receive method calls. Short-form equivalents are provided for `ToReceive()` and
-other chained methods and a super-terse option provides maximum brevity.
+the Â character, type `Alt+0194` on Windows keyboards or `Shift+Option+M` on Mac keyboards
+(as a mnemonic, think "**Â** allows my **M**ock the **o**ption of being called.") 
+
+Short-form equivalents are provided for `ToReceive()` and other chained methods, and
+a super-terse form of Â delivers maximum brevity.
 
 ```go
   // Super terse DSL
