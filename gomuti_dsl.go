@@ -36,7 +36,7 @@ import (
 // object whose methods allow you to specify the test double's behavior when
 // its methods are called.
 //
-// For information about parameter matching and return values, see Allowed.
+// For information about parameter matching and return values, see types.Allowed.
 func Allow(double interface{}) *types.Allowed {
 	m := types.FindMock(reflect.ValueOf(double))
 	return m.Allow()

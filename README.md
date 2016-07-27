@@ -47,7 +47,7 @@ To program behavior into your mock, use the DSL methods in the `gomuti`
 package. `Allow()` instructs your mock to expect a method call and
 tells it what to return.
 
-### Allowing method calls
+### Mocking calls: Allow()
 
 Imagine you're writing unit tests for the `Multiplier` type
 and you want to isolate yourself from bugs in `Adder`.
@@ -84,6 +84,8 @@ that adds arbitrarily-typed values.
   Allow(adder).Call("AddStuff").With(AnythingOfType("bool"), Anything()).Return(true)
 ```
 
+### Spying on mocks: HaveCall()
+
 You can use the `HaveCall()` Gomega matcher to spy on your mock, verifying the
 number of calls actually made to your mock as well as the specific parameter
 values.
@@ -92,6 +94,12 @@ values.
 integer := AnythingOfType("int64")
 Expect(adder).To(HaveCall("Add").With(integer, integer).Times(2))
 ```
+
+### Stubbing calls
+
+If you generate your mocks with [Mongoose](https://github.com/xeger/mongoose),
+then they come with a boolean `Stub` field; setting this field to true causes
+all methods to return zero values unless a matching call has been programmed.
 
 ### RSpec DSL
 
