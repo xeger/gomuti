@@ -6,7 +6,7 @@ Gomuti is DSL for [mocking](https://en.wikipedia.org/wiki/Mock_object) Golang in
 With a [Ginkgo](https://github.com/onsi/ginkgo)-like DSL for programming mock behavior, Gomuti makes it
 easy to write beautiful, well-isolated unit tests.
 
-Mocks can also be [spies](https://robots.thoughtbot.com/spy-vs-spy#what-do-you-mean-spy) and [stubs](),
+Mocks can also be [spies](https://robots.thoughtbot.com/spy-vs-spy#what-do-you-mean-spy) and stubs,
 enabling [behavior-driven development](https://en.wikipedia.org/wiki/Behavior-driven_development) and
 terse, easy-to-maintain mock setup.
 
@@ -90,7 +90,7 @@ that adds arbitrarily-typed values.
 Gomuti's long-form DSL is inspired by RSpec and its "plain English" approach.
 There is also a short-form DSL built around the method `gomuti.Â()`. To produce
 the Â character, type `Alt+0194` on Windows keyboards or `Shift+Option+M` on Mac keyboards
-(as a mnemonic, think "**Â** allows my **M**ock the **o**ption of being called.") 
+(as a mnemonic, think "**Â** allows my **M**ock the **o**ption of being called.")
 
 Short-form equivalents are provided for `ToReceive()` and other chained methods, and
 a super-terse form of Â delivers maximum brevity. If we also use Gomega's Ω method, our
@@ -121,6 +121,8 @@ operation.
 ## How to get help
 
 Check the [frequently-asked questions](FAQ.md) to see if your problem is common.
+
+If you have an API question of concern, make sure to check [Gomuti's godocs](https://godoc.org/github.com/xeger/gomuti).
 
 If you think Gomuti is missing a feature, check the [roadmap](TODO.md) to see
 if a similar feature is already planned.

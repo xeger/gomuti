@@ -5,24 +5,31 @@ import (
 	"github.com/xeger/gomuti/matchers"
 )
 
-// BeAnything matches _any_ value including nil and zero values.
+// BeAnything creates a matcher that is always satisfied. It is useful when
+// you want to mock a method call but don't care about the parameter in a given
+// position.
+//
+// Example:
+//
+//     Allow(boat).Call("Sail").With("west", BeAnything(), "mi").Panic("Please use kilometers")
 func BeAnything() types.GomegaMatcher {
 	return &matchers.BeAnythingMatcher{}
 }
 
-// Anything is an alias for BeAnything. It promotes readable mock call
-// expectations. Example:
+// Anything is an alias for BeAnything, designed to be more readable in the
+// context of a mocked method call.
 //
-//    Allow(myMock).ToReceive("Foo").With(Anything())
+// Example:
 //
-// Which is equivalent to, but more readable, than:
+//     Allow(boat).Call("Sail").With("west", Anything(), "mi").Panic("Please use kilometers")
 //
-//    Allow(myMock).ToReceive("Foo").With(BeAnything())
+// Which makes more sense than "with be-anything."
 func Anything() types.GomegaMatcher {
 	return BeAnything()
 }
 
-// HaveType matches any value whose type matches the specified name. Example:
+// HaveType creates a matcher that is satisfied by any value whose type matches
+// the specified name. Example:
 //
 //     Expect(4).To(HaveType("int"))
 //
@@ -37,21 +44,24 @@ func HaveType(name string) types.GomegaMatcher {
 	return &matchers.HaveTypeMatcher{Expected: name}
 }
 
-// AnythingOfType is an alias for HaveType. It promotes readable mock call
-// expectations. Example:
+// AnythingOfType is an alias for HaveType, designed to be more readable in the
+// context of a mocked method call.
 //
-//    Allow(myMock).ToReceive("Foo").With(AnythingOfType("mypkg.Widget"))
+// Example:
 //
-// Which is equivalent to, but more readable, than:
+//     Allow(myMock).ToReceive("Foo").With(AnythingOfType("mypkg.Widget"))
 //
-//    Allow(myMock).ToReceive("Foo").With(HaveType("mypkg.Widget"))
+// Which makes more sense than "with have-type."
 func AnythingOfType(name string) types.GomegaMatcher {
 	return HaveType(name)
 }
 
-// HaveCall verifies that a method call was recored by a spy.
-// You can add additional constraints to the verification by calling With() or
-// Returning() on the matcher returned by this method.
+// HaveCall is a spy method. It returns a matcher to verify that a method call
+// was recorded by a spy. You can add more verifications (of parameter values,
+// call count, etc) by calling methods on the returned matcher.
+//
+// Example:
+//     Expect(double).To(HaveCall("Bar").With(true, 42).Twice())
 func HaveCall(method string) *matchers.HaveCallMatcher {
 	return &matchers.HaveCallMatcher{Method: method, Count: 1}
 }
