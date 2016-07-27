@@ -1,4 +1,4 @@
-# Gomuti
+![Gomuti](logo.png)
 
 [![Build Status](https://travis-ci.org/xeger/gomuti.png)](https://travis-ci.org/xeger/gomuti)
 
@@ -106,7 +106,7 @@ the beholder.)
   Â(adder).Call("Add").With(big,Anything()).Panic("integer overflow")
 
   Ω(subject.Multiply(2,5)).Should(Equal(10))
-  Ω(subject).Should(HaveCall("Add").Times(2))
+  Ω(adder).Should(HaveCall("Add").Times(2))
 
   Ω(func() {
     subject.Multiply(2**32-1,1)
@@ -122,7 +122,7 @@ operation.
 
 Check the [frequently-asked questions](FAQ.md) to see if your problem is common.
 
-If you have an API question of concern, make sure to check [Gomuti's godocs](https://godoc.org/github.com/xeger/gomuti).
+Make sure to check [Gomuti's godocs](https://godoc.org/github.com/xeger/gomuti) for relevant information.
 
 If you think Gomuti is missing a feature, check the [roadmap](TODO.md) to see
 if a similar feature is already planned.
