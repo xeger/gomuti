@@ -45,9 +45,9 @@ but a hand-coded mock is fine for example purposes.
 
 To program behavior into your mock, use the DSL methods in the `gomuti`
 package. `Allow()` instructs your mock to expect a method call and
-tells it what to return. After calling the code under test, you can
-use the `HaveReceived()` Gomega matcher to verify the number of calls
-actually made to your mock as well as the specific parameter values.
+tells it what to return.
+
+### Allowing method calls
 
 Imagine you're writing unit tests for the `Multiplier` type
 and you want to isolate yourself from bugs in `Adder`.
@@ -67,10 +67,9 @@ and you want to isolate yourself from bugs in `Adder`.
     })
 
     It("computes the product of two integers", func() {
-      Allow(adder).ToReceive("Add").With(5,5).AndReturn(10)
-      Allow(adder).ToReceive("Add").With(10,5).AndReturn(15)
+      Allow(adder).Call("Add").With(5,5).Return(10)
+      Allow(adder).Call("Add").With(10,5).Return(15)
       result := subject.Multiply(3,5))
-      Expect(adder).To(HaveReceived("Add").Times(2))
       Expect(result).To(Equal(15))
     })
   })
@@ -82,12 +81,31 @@ sophisticated behavior. Imagine your adder has a new `AddStuff()` feature
 that adds arbitrarily-typed values.
 
 ```go
-  Allow(adder).ToReceive("AddStuff").With(AnythingOfType("bool"), Anything()).AndReturn(True)
+  Allow(adder).Call("AddStuff").With(AnythingOfType("bool"), Anything()).Return(true)
+```
+
+You can use the `HaveCall()` Gomega matcher to spy on your mock, verifying the
+number of calls actually made to your mock as well as the specific parameter
+values.
+
+```go
+integer := AnythingOfType("int64")
+Expect(adder).To(HaveCall("Add").With(integer, integer).Times(2))
+```
+
+### RSpec DSL
+
+Gomuti has some method aliases that imitate RSpec's plain-English DSL.
+
+```go
+Expect(adder).ToReceive("Add").With(42,Anything()).AndReturn(42)
+adder.Add(42, 7)
+Expect(adder).To(HaveReceived("Add").Once())
 ```
 
 ### Terse DSL
 
-Gomuti's long-form DSL is inspired by RSpec and its "plain English" approach.
+Gomuti's long-form DSL uses concise English words as method names.
 There is also a short-form DSL built around the method `gomuti.Â()`. To produce
 the Â character, type `Alt+0194` on Windows keyboards or `Shift+Option+M` on Mac keyboards
 (as a mnemonic, think "**Â** allows my **M**ock the **o**ption of being called.")
