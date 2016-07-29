@@ -27,6 +27,30 @@ var _ = Describe("Spy", func() {
 		s = types.Spy{}
 	})
 
+	It("complains when nil is called", func() {
+		s = nil
+
+		checker := func() {
+			r := recover()
+
+			str, _ := r.(string)
+			Expect(str).NotTo(BeNil())
+
+			Expect(str).To(MatchRegexp("^gomuti:"))
+			panic(r)
+		}
+
+		Expect(func() {
+			defer checker()
+			s.Observe("Foo")
+		}).To(Panic())
+
+		Expect(func() {
+			defer checker()
+			s.Count("Foo")
+		}).To(Panic())
+	})
+
 	It("counts method calls", func() {
 		s.Observe("Foo", true)
 		s.Observe("Foo", true)

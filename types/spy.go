@@ -16,6 +16,10 @@ type Spy map[string][]called
 
 // Observe records a method call.
 func (s Spy) Observe(method string, params ...interface{}) {
+	if s == nil {
+		panic("gomuti: must initialize Spy before calling Observe")
+	}
+
 	events := s[method]
 	events = append(events, called{Params: params})
 	s[method] = events
@@ -24,6 +28,10 @@ func (s Spy) Observe(method string, params ...interface{}) {
 // Count returns the number of times a method was called that matched the given
 // criteria.
 func (s Spy) Count(method string, criteria ...Matcher) int {
+	if s == nil {
+		panic("gomuti: must initialize Spy before calling Count")
+	}
+
 	events := s[method]
 	res := 0
 
