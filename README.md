@@ -1,6 +1,6 @@
 ![Gomuti](logo.png)
 
-[![Build Status](https://travis-ci.org/xeger/gomuti.png)](https://travis-ci.org/xeger/gomuti)
+[![Build Status](https://travis-ci.org/xeger/gomuti.png)](https://travis-ci.org/xeger/gomuti) [![Go Report](https://goreportcard.com/badge/github.com/xeger/gomuti)](https://goreportcard.com/report/github.com/xeger/gomuti)
 
 Gomuti is DSL for [mocking](https://en.wikipedia.org/wiki/Mock_object) Golang interfaces, inspired by  [Gomega](https://github.com/onsi/gomega) and drawing upon Gomega matchers to dispatch mock method calls.
 With a [Ginkgo](https://github.com/onsi/ginkgo)-like DSL for programming mock behavior, Gomuti makes it
