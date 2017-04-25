@@ -54,6 +54,21 @@ func formatMatcherInfo(b *bytes.Buffer, indent int, params []types.Matcher) stri
 	return b.String()
 }
 
+// Returns a multi-line string describing the position and nature of
+// each recorded actual parameter in a list. Indents each line the
+// specified number of spaces.
+func formatParamInfo(b *bytes.Buffer, indent int, params []interface{}) string {
+	spacer := strings.Repeat(" ", indent)
+	for i, p := range params {
+		v := fmt.Sprintf("%#v", p)
+		if len(v) > 60 {
+			v = fmt.Sprintf("%59.59s…", v)
+		}
+		b.WriteString(fmt.Sprintf("%s%2d: %s\n", spacer, i, v))
+	}
+	return b.String()
+}
+
 // HaveCallMatcher consults the spy of a test double in order to verify that
 // method calls were received with specified parameters.
 type HaveCallMatcher struct {
@@ -79,7 +94,13 @@ func (sm *HaveCallMatcher) FailureMessage(actual interface{}) (message string) {
 		return fmt.Sprintf("Cannot spy on %T", actual)
 	}
 	matched := spy.Count(sm.Method, sm.Params...)
-	return sm.describe("Expected", matched)
+
+	var closest []interface{}
+	if spy.Count(sm.Method) > 0 {
+		closest = spy.ClosestMatch(sm.Method, sm.Params...)
+	}
+
+	return sm.describe("Expected", matched, closest)
 }
 
 // NegatedFailureMessage returns an explanation of the method call that was unexpected.
@@ -89,7 +110,7 @@ func (sm *HaveCallMatcher) NegatedFailureMessage(actual interface{}) (message st
 		return fmt.Sprintf("Cannot spy on %T", actual)
 	}
 	matched := spy.Count(sm.Method, sm.Params...)
-	return sm.describe("Did not expect", matched)
+	return sm.describe("Did not expect", matched, nil)
 }
 
 // With adds an expectation about method parameters.
@@ -119,7 +140,7 @@ func (sm *HaveCallMatcher) Twice() *HaveCallMatcher {
 	return sm.Times(2)
 }
 
-func (sm *HaveCallMatcher) describe(lede string, got int) string {
+func (sm *HaveCallMatcher) describe(lede string, got int, closest []interface{}) string {
 	var ecalls, gcalls string
 	if sm.Count == 1 {
 		ecalls = "call"
@@ -140,6 +161,12 @@ func (sm *HaveCallMatcher) describe(lede string, got int) string {
 	} else {
 		b.WriteString(" ")
 	}
-	b.WriteString(fmt.Sprintf("but got %d %s", got, gcalls))
+
+	if got == 0 && closest != nil {
+		b.WriteString("but no call matched exactly. Closest match:\n")
+		formatParamInfo(b, 2, closest)
+	} else {
+		b.WriteString(fmt.Sprintf("but observed %d %s", got, gcalls))
+	}
 	return b.String()
 }

@@ -58,6 +58,34 @@ func (s Spy) Count(method string, criteria ...Matcher) int {
 	return res
 }
 
+// ClosestMatch returns the parameters of the recorded call that most closely
+// matches the given criteria, or nil if the method was never called at all.
+func (s Spy) ClosestMatch(method string, criteria ...Matcher) []interface{} {
+	if s == nil {
+		panic("gomuti: must initialize Spy before calling ClosestMatch")
+	}
+
+	var best []interface{}
+	var bestCount int
+
+	for _, call := range s[method] {
+		count := 0
+		for i, crit := range criteria {
+			if len(call.Params) > i {
+				if ok, _ := crit.Match(call.Params[i]); ok {
+					count++
+				}
+			}
+		}
+		if count > bestCount {
+			best = call.Params
+			bestCount = count
+		}
+	}
+
+	return best
+}
+
 func isSpy(t reflect.Type) bool {
 	return t.String() == "types.Spy" && strings.Index(t.PkgPath(), "gomuti") > 0
 }
